@@ -3,7 +3,7 @@ param dnsNameLabel string
 
 param imageName string = 'chumaigwe9/bees-knee-wb:latest'
 
-resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2021-04-01' = {
+resource containerGroup 'Microsoft.ContainerInstance/containerGroups@2023-05-01' = {
   name: dnsNameLabel
   location: location
   properties: {
