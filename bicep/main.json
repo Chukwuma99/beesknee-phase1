@@ -1,0 +1,390 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.19.5.34762",
+      "templateHash": "4742691093867295736"
+    }
+  },
+  "parameters": {
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "iacBeesKneeRG"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "canadacentral"
+    },
+    "dnsNameLabel": {
+      "type": "string",
+      "defaultValue": "beesknee"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}1', parameters('dnsNameLabel'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dnsNameLabel": {
+            "value": "[format('{0}1', parameters('dnsNameLabel'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.19.5.34762",
+              "templateHash": "9033375663773894215"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "dnsNameLabel": {
+              "type": "string"
+            },
+            "imageName": {
+              "type": "string",
+              "defaultValue": "chumaigwe9/bees-knee-web:1.0"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ContainerInstance/containerGroups",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('dnsNameLabel')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "containers": [
+                  {
+                    "name": "[parameters('dnsNameLabel')]",
+                    "properties": {
+                      "image": "[parameters('imageName')]",
+                      "ports": [
+                        {
+                          "port": 80
+                        }
+                      ],
+                      "resources": {
+                        "requests": {
+                          "cpu": 1,
+                          "memoryInGB": 1
+                        }
+                      }
+                    }
+                  }
+                ],
+                "restartPolicy": "Always",
+                "ipAddress": {
+                  "type": "Public",
+                  "dnsNameLabel": "[parameters('dnsNameLabel')]",
+                  "ports": [
+                    {
+                      "protocol": "TCP",
+                      "port": 80
+                    }
+                  ]
+                },
+                "osType": "Linux"
+              }
+            }
+          ],
+          "outputs": {
+            "ipAddress": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('dnsNameLabel')), '2023-05-01').ipAddress.ip]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}2', parameters('dnsNameLabel'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "dnsNameLabel": {
+            "value": "[format('{0}2', parameters('dnsNameLabel'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.19.5.34762",
+              "templateHash": "9033375663773894215"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "dnsNameLabel": {
+              "type": "string"
+            },
+            "imageName": {
+              "type": "string",
+              "defaultValue": "chumaigwe9/bees-knee-web:1.0"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.ContainerInstance/containerGroups",
+              "apiVersion": "2023-05-01",
+              "name": "[parameters('dnsNameLabel')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "containers": [
+                  {
+                    "name": "[parameters('dnsNameLabel')]",
+                    "properties": {
+                      "image": "[parameters('imageName')]",
+                      "ports": [
+                        {
+                          "port": 80
+                        }
+                      ],
+                      "resources": {
+                        "requests": {
+                          "cpu": 1,
+                          "memoryInGB": 1
+                        }
+                      }
+                    }
+                  }
+                ],
+                "restartPolicy": "Always",
+                "ipAddress": {
+                  "type": "Public",
+                  "dnsNameLabel": "[parameters('dnsNameLabel')]",
+                  "ports": [
+                    {
+                      "protocol": "TCP",
+                      "port": 80
+                    }
+                  ]
+                },
+                "osType": "Linux"
+              }
+            }
+          ],
+          "outputs": {
+            "ipAddress": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('dnsNameLabel')), '2023-05-01').ipAddress.ip]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}AppGateway', parameters('dnsNameLabel'))]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "backendAddresses": {
+            "value": [
+              "[reference(resourceId('Microsoft.Resources/deployments', format('{0}1', parameters('dnsNameLabel'))), '2022-09-01').outputs.ipAddress.value]",
+              "[reference(resourceId('Microsoft.Resources/deployments', format('{0}2', parameters('dnsNameLabel'))), '2022-09-01').outputs.ipAddress.value]"
+            ]
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.19.5.34762",
+              "templateHash": "15479438226723899088"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "backendAddresses": {
+              "type": "array"
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/publicIPAddresses",
+              "apiVersion": "2021-02-01",
+              "name": "beeskneePublicIP",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard"
+              },
+              "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static"
+              }
+            },
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2021-02-01",
+              "name": "beeskneeVnet",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "10.0.0.0/16"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "beeskneeSubnet",
+                    "properties": {
+                      "addressPrefix": "10.0.0.0/24"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "type": "Microsoft.Network/applicationGateways",
+              "apiVersion": "2021-02-01",
+              "name": "beeskneeAppGateway",
+              "location": "[parameters('location')]",
+              "properties": {
+                "sku": {
+                  "name": "Standard_Small",
+                  "tier": "Standard",
+                  "capacity": 2
+                },
+                "gatewayIPConfigurations": [
+                  {
+                    "name": "beeskneeGatewayIP",
+                    "properties": {
+                      "subnet": {
+                        "id": "[reference(resourceId('Microsoft.Network/virtualNetworks', 'beeskneeVnet'), '2021-02-01').subnets[0].id]"
+                      }
+                    }
+                  }
+                ],
+                "frontendIPConfigurations": [
+                  {
+                    "name": "beeskneeFrontendIP",
+                    "properties": {
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'beeskneePublicIP')]"
+                      }
+                    }
+                  }
+                ],
+                "frontendPorts": [
+                  {
+                    "name": "beeskneePort",
+                    "properties": {
+                      "port": 80
+                    }
+                  }
+                ],
+                "backendAddressPools": [
+                  {
+                    "name": "beeskneeBackendPool",
+                    "properties": {
+                      "copy": [
+                        {
+                          "name": "backendAddresses",
+                          "count": "[length(parameters('backendAddresses'))]",
+                          "input": {
+                            "ipAddress": "[parameters('backendAddresses')[copyIndex('backendAddresses')]]"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "backendHttpSettingsCollection": [
+                  {
+                    "name": "beeskneeBackendHttpSettings",
+                    "properties": {
+                      "port": 80,
+                      "protocol": "Http",
+                      "cookieBasedAffinity": "Disabled",
+                      "pickHostNameFromBackendAddress": false,
+                      "requestTimeout": 20
+                    }
+                  }
+                ],
+                "httpListeners": [
+                  {
+                    "name": "beeskneeHttpListener",
+                    "properties": {
+                      "frontendIPConfiguration": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', 'beeskneeAppGateway', 'beeskneeFrontendIP')]"
+                      },
+                      "frontendPort": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', 'beeskneeAppGateway', 'beeskneePort')]"
+                      },
+                      "protocol": "Http"
+                    }
+                  }
+                ],
+                "requestRoutingRules": [
+                  {
+                    "name": "beeskneeRequestRoutingRule",
+                    "properties": {
+                      "ruleType": "Basic",
+                      "httpListener": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', 'beeskneeAppGateway', 'beeskneeHttpListener')]"
+                      },
+                      "backendAddressPool": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', 'beeskneeAppGateway', 'beeskneeBackendPool')]"
+                      },
+                      "backendHttpSettings": {
+                        "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', 'beeskneeAppGateway', 'beeskneeBackendHttpSettings')]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', 'beeskneePublicIP')]",
+                "[resourceId('Microsoft.Network/virtualNetworks', 'beeskneeVnet')]"
+              ]
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', format('{0}1', parameters('dnsNameLabel')))]",
+        "[resourceId('Microsoft.Resources/deployments', format('{0}2', parameters('dnsNameLabel')))]"
+      ]
+    }
+  ]
+}

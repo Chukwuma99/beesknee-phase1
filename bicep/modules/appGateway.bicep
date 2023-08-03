@@ -9,9 +9,10 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   }
   properties: {
     publicIPAddressVersion: 'IPv4'
-    publicIPAllocationMethod: 'Dynamic'
+    publicIPAllocationMethod: 'Static'
   }
 }
+
 
 resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: 'beeskneeVnet'
