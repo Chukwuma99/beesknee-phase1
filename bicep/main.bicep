@@ -4,7 +4,7 @@ param httpdContainerImage string = 'chumaigwe9/bees-knee-web:1.0'
 
 /*
 ------------------------------------------------
-CONTAINER INSTANCE
+CONTAINER INSTANCE 1
 ------------------------------------------------
 */
 module httpdContainer1 './modules/httpdContainer.bicep' = {
@@ -17,7 +17,7 @@ module httpdContainer1 './modules/httpdContainer.bicep' = {
 
 /*
 ------------------------------------------------
-CONTAINER INSTANCE
+CONTAINER INSTANCE 2
 ------------------------------------------------
 */
 module httpdContainer2 './modules/httpdContainer.bicep' = {
