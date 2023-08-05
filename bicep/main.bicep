@@ -1,6 +1,6 @@
 param location string = 'canadacentral'
 param appName string = 'beeskneewebapp'
-param httpdContainerImage string = 'chumaigwe9/bees-knee-web:1.5'
+param httpdContainerImage string = 'chumaigwe9/bees-knee-web:1.0'
 
 /*
 ------------------------------------------------
