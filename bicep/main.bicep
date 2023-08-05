@@ -1,32 +1,46 @@
-targetScope = 'resourceGroup'
-
-param resourceGroupName string = 'iacBeesKneeRG'
 param location string = 'canadacentral'
-param dnsNameLabel string = 'beesknee'
+param appName string = 'beeskneewebapp'
+param httpdContainerImage string = 'chumaigwe9/bees-knee-web:1.5'
 
-module containerGroup1 './modules/containerGroup.bicep' = {
-  name: '${dnsNameLabel}1'
+/*
+------------------------------------------------
+CONTAINER INSTANCE
+------------------------------------------------
+*/
+module httpdContainer1 './modules/httpdContainer.bicep' = {
+  name: '${appName}-container1'
   params: {
+    containerImage: httpdContainerImage
     location: location
-    dnsNameLabel: '${dnsNameLabel}1'
   }
 }
 
-module containerGroup2 './modules/containerGroup.bicep' = {
-  name: '${dnsNameLabel}2'
+/*
+------------------------------------------------
+CONTAINER INSTANCE
+------------------------------------------------
+*/
+module httpdContainer2 './modules/httpdContainer.bicep' = {
+  name: '${appName}-container2'
   params: {
+    containerImage: httpdContainerImage
     location: location
-    dnsNameLabel: '${dnsNameLabel}2'
   }
 }
 
-module appGateway './modules/appGateway.bicep' = {
-  name: '${dnsNameLabel}AppGateway'
-  params: {
-    location: location
-    backendAddresses: [
-      containerGroup1.outputs.ipAddress
-      containerGroup2.outputs.ipAddress
-    ]
-  }
-}
+/*
+------------------------------------------------
+APPLICATION GATEWAY
+------------------------------------------------
+*/
+// module appGateway './modules/appGateway.bicep' = {
+//   name: '${appName}-appgateway'
+//   params: {
+//     frontendPort: 80
+//     backendPort: 80
+//     httpdContainer1Id: httpdContainer1.outputs.containerInstanceId
+//     httpdContainer2Id: httpdContainer2.outputs.containerInstanceId
+//     location: location
+//     appName: appName
+//   }
+// }

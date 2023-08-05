@@ -1,61 +1,58 @@
+param frontendPort int
+param backendPort int
+param httpdContainer1Id string
+param httpdContainer2Id string
 param location string
-param backendAddresses array
+param appName string
 
-resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
-  name: 'beeskneePublicIP'
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2021-05-01' = {
+  name: '${appName}-vnet'
   location: location
-  sku: {
-    name: 'Standard'
-  }
   properties: {
-    publicIPAddressVersion: 'IPv4'
+    addressSpace: {
+      addressPrefixes: ['10.0.0.0/16']
+    }
+  }
+}
+
+resource subnet 'Microsoft.Network/virtualNetworks/subnets@2021-05-01' = {
+  name: '${appName}-subnet'
+  parent: virtualNetwork
+  properties: {
+    addressPrefix: '10.0.0.0/24'
+  }
+}
+
+resource publicIP 'Microsoft.Network/publicIPAddresses@2021-05-01' = {
+  name: '${appName}-publicIP'
+  location: location
+  properties: {
     publicIPAllocationMethod: 'Static'
   }
 }
 
-
-resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
-  name: 'beeskneeVnet'
-  location: location
-  properties: {
-    addressSpace: {
-      addressPrefixes: [
-        '10.0.0.0/16'
-      ]
-    }
-    subnets: [
-      {
-        name: 'beeskneeSubnet'
-        properties: {
-          addressPrefix: '10.0.0.0/24'
-        }
-      }
-    ]
-  }
-}
-
-resource appGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
-  name: 'beeskneeAppGateway'
+resource appGatewayResource 'Microsoft.Network/applicationGateways@2023-04-01' = {
+  name: '${location}-${appName}-appGateway'
   location: location
   properties: {
     sku: {
-      name: 'Standard_Small'
-      tier: 'Standard'
       capacity: 2
+      name: 'WAF_v2'
+      tier: 'WAF_v2'      
     }
     gatewayIPConfigurations: [
       {
-        name: 'beeskneeGatewayIP'
+        name: 'appGatewayIpConfig'
         properties: {
           subnet: {
-            id: vnet.properties.subnets[0].id
+            id: subnet.id
           }
         }
       }
     ]
     frontendIPConfigurations: [
       {
-        name: 'beeskneeFrontendIP'
+        name: 'appGatewayFrontendIP'
         properties: {
           publicIPAddress: {
             id: publicIP.id
@@ -65,43 +62,39 @@ resource appGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
     ]
     frontendPorts: [
       {
-        name: 'beeskneePort'
+        name: 'appGatewayFrontendPort'
         properties: {
-          port: 80
+          port: frontendPort
         }
       }
     ]
     backendAddressPools: [
       {
-        name: 'beeskneeBackendPool'
+        name: 'appGatewayBackendPool'
         properties: {
-          backendAddresses: [for address in backendAddresses: {
-            ipAddress: address
-          }]
+          backendAddresses: []
         }
       }
     ]
     backendHttpSettingsCollection: [
       {
-        name: 'beeskneeBackendHttpSettings'
+        name: 'appGatewayBackendHttpSettings'
         properties: {
           port: 80
           protocol: 'Http'
           cookieBasedAffinity: 'Disabled'
-          pickHostNameFromBackendAddress: false
-          requestTimeout: 20
         }
       }
     ]
     httpListeners: [
       {
-        name: 'beeskneeHttpListener'
+        name: 'appGatewayHttpListener'
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', 'beeskneeAppGateway', 'beeskneeFrontendIP')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', '${location}-${appName}-appGateway', 'appGatewayFrontendIP')
           }
           frontendPort: {
-            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', 'beeskneeAppGateway', 'beeskneePort')
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', '${location}-${appName}-appGateway', 'appGatewayFrontendPort')
           }
           protocol: 'Http'
         }
@@ -109,20 +102,31 @@ resource appGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
     ]
     requestRoutingRules: [
       {
-        name: 'beeskneeRequestRoutingRule'
+        name: 'appGatewayRule1'
         properties: {
           ruleType: 'Basic'
+          priority: 1
           httpListener: {
-            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', 'beeskneeAppGateway', 'beeskneeHttpListener')
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', '${location}-${appName}-appGateway', 'appGatewayHttpListener')
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', 'beeskneeAppGateway', 'beeskneeBackendPool')
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', '${location}-${appName}-appGateway', 'appGatewayBackendPool')
           }
           backendHttpSettings: {
-            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', 'beeskneeAppGateway', 'beeskneeBackendHttpSettings')
+            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', '${location}-${appName}-appGateway', 'appGatewayBackendHttpSettings')
           }
         }
       }
     ]
+    webApplicationFirewallConfiguration: {
+      enabled: true
+      firewallMode: 'Detection'
+      ruleSetType: 'OWASP'
+      ruleSetVersion: '3.0'
+    }
+    enableHttp2: true
   }
+  
 }
+
+output appGatewayId string = appGatewayResource.id
