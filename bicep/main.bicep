@@ -2,7 +2,7 @@ param appName string = 'beeskneewebapp'
 param location string = 'canadacentral'
 param image string = 'chumaigwe9/bees-knee-web:1.0'
 
-// Create a public IP address
+// public IP address
 resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   name: '${appName}PublicIP'
   location: location
@@ -15,7 +15,7 @@ resource publicIP 'Microsoft.Network/publicIPAddresses@2021-02-01' = {
   }
 }
 
-// Create a virtual network and subnet for the application gateway
+// virtual network and subnet for the application gateway
 resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   name: '${appName}Vnet'
   location: location
@@ -36,7 +36,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = {
   }
 }
 
-// Create an Application Gateway
+// Application Gateway
 resource appGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
   name: '${appName}AppGateway'
   location: location
@@ -79,7 +79,6 @@ resource appGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
         name: 'appGatewayBackendPool'
         properties: {
           backendAddresses: [
-            // Replace the IPs with the actual IPs of your containers
             {
               ipAddress: 'container1IpAddress'
             }
@@ -133,7 +132,8 @@ resource appGateway 'Microsoft.Network/applicationGateways@2021-02-01' = {
   }
 }
 
-// Create two Azure Container Groups with same image
+
+// container 1
 resource containerGroup1 'Microsoft.ContainerInstance/containerGroups@2021-03-01' = {
   name: '${appName}ContainerGroup1'
   location: location
@@ -171,6 +171,7 @@ resource containerGroup1 'Microsoft.ContainerInstance/containerGroups@2021-03-01
   }
 }
 
+// container 2
 resource containerGroup2 'Microsoft.ContainerInstance/containerGroups@2021-03-01' = {
   name: '${appName}ContainerGroup2'
   location: location
